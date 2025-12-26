@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ErgoAssess - Loading</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .splash-container {
+            text-align: center;
+            color: white;
+        }
+
+        /* Animated Logo */
+        .logo-wrapper {
+            position: relative;
+            width: 200px;
+            height: 240px;
+            margin: 0 auto 2rem;
+        }
+
+        .logo-svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Logo parts */
+        .logo-head {
+            fill: #0ea5e9;
+            animation: headBob 2s ease-in-out infinite;
+            transform-origin: center 45px;
+        }
+
+        .logo-torso {
+            fill: white;
+        }
+
+        .logo-limb {
+            fill: white;
+            opacity: 0.9;
+        }
+
+        .logo-joint {
+            fill: #0f172a;
+            stroke: #0ea5e9;
+            stroke-width: 2;
+        }
+
+        .joint-pulse {
+            animation: jointGlow 1.5s ease-in-out infinite;
+        }
+
+        .joint-pulse:nth-child(1) {
+            animation-delay: 0s;
+        }
+
+        .joint-pulse:nth-child(2) {
+            animation-delay: 0.15s;
+        }
+
+        .joint-pulse:nth-child(3) {
+            animation-delay: 0.3s;
+        }
+
+        .joint-pulse:nth-child(4) {
+            animation-delay: 0.45s;
+        }
+
+        .joint-pulse:nth-child(5) {
+            animation-delay: 0.6s;
+        }
+
+        .joint-pulse:nth-child(6) {
+            animation-delay: 0.75s;
+        }
+
+        .angle-arc {
+            fill: none;
+            stroke: #f97316;
+            stroke-width: 3;
+            stroke-linecap: round;
+            stroke-dasharray: 30;
+            stroke-dashoffset: 30;
+            animation: drawArc 2s ease-in-out infinite;
+        }
+
+        .measure-line {
+            stroke: #22c55e;
+            stroke-width: 2;
+            stroke-dasharray: 5 3;
+            animation: dash 1s linear infinite;
+        }
+
+        @keyframes headBob {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-3px);
+            }
+        }
+
+        @keyframes jointGlow {
+
+            0%,
+            100% {
+                r: 6;
+                filter: drop-shadow(0 0 3px #0ea5e9);
+            }
+
+            50% {
+                r: 8;
+                filter: drop-shadow(0 0 10px #0ea5e9);
+            }
+        }
+
+        @keyframes drawArc {
+            0% {
+                stroke-dashoffset: 30;
+            }
+
+            50% {
+                stroke-dashoffset: 0;
+            }
+
+            100% {
+                stroke-dashoffset: -30;
+            }
+        }
+
+        @keyframes dash {
+            to {
+                stroke-dashoffset: -16;
+            }
+        }
+
+        /* Scanning line */
+        .scan-line {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, #0ea5e9, transparent);
+            animation: scan 2s ease-in-out infinite;
+        }
+
+        @keyframes scan {
+            0% {
+                top: 0;
+                opacity: 0;
+            }
+
+            10% {
+                opacity: 1;
+            }
+
+            90% {
+                opacity: 1;
+            }
+
+            100% {
+                top: 100%;
+                opacity: 0;
+            }
+        }
+
+        /* Text */
+        .app-name {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, #ffffff 0%, #0ea5e9 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .app-tagline {
+            font-size: 1rem;
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 2rem;
+        }
+
+        /* Loading bar */
+        .loading-bar {
+            width: 200px;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 2px;
+            margin: 0 auto;
+            overflow: hidden;
+        }
+
+        .loading-progress {
+            height: 100%;
+            background: linear-gradient(90deg, #0ea5e9, #22c55e);
+            border-radius: 2px;
+            animation: loading 2s ease-in-out infinite;
+        }
+
+        @keyframes loading {
+            0% {
+                width: 0%;
+            }
+
+            50% {
+                width: 70%;
+            }
+
+            100% {
+                width: 100%;
+            }
+        }
+
+        .loading-text {
+            margin-top: 1rem;
+            font-size: 0.875rem;
+            color: rgba(255, 255, 255, 0.5);
+            animation: textPulse 1.5s ease-in-out infinite;
+        }
+
+        @keyframes textPulse {
+
+            0%,
+            100% {
+                opacity: 0.5;
+            }
+
+            50% {
+                opacity: 1;
+            }
+        }
+
+        /* Particles */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: #0ea5e9;
+            border-radius: 50%;
+            opacity: 0.3;
+            animation: float 8s ease-in-out infinite;
+        }
+
+        .particle:nth-child(1) {
+            left: 10%;
+            animation-delay: 0s;
+        }
+
+        .particle:nth-child(2) {
+            left: 20%;
+            animation-delay: 1s;
+        }
+
+        .particle:nth-child(3) {
+            left: 30%;
+            animation-delay: 2s;
+        }
+
+        .particle:nth-child(4) {
+            left: 50%;
+            animation-delay: 3s;
+        }
+
+        .particle:nth-child(5) {
+            left: 70%;
+            animation-delay: 4s;
+        }
+
+        .particle:nth-child(6) {
+            left: 80%;
+            animation-delay: 5s;
+        }
+
+        .particle:nth-child(7) {
+            left: 90%;
+            animation-delay: 6s;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(100vh) scale(0);
+                opacity: 0;
+            }
+
+            10% {
+                opacity: 0.3;
+            }
+
+            90% {
+                opacity: 0.3;
+            }
+
+            100% {
+                transform: translateY(-100vh) scale(1);
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="particles">
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+    </div>
+
+    <div class="splash-container">
+        <div class="logo-wrapper">
+            <div class="scan-line"></div>
+            <svg class="logo-svg" viewBox="0 0 120 150" fill="none">
+                <!-- Measurement lines -->
+                <line x1="20" y1="35" x2="20" y2="130" class="measure-line" />
+                <line x1="35" y1="15" x2="85" y2="15" class="measure-line" />
+
+                <!-- Head -->
+                <circle cx="60" cy="28" r="16" class="logo-head" />
+
+                <!-- Torso -->
+                <rect x="42" y="46" width="36" height="45" rx="6" class="logo-torso" />
+
+                <!-- Arms -->
+                <rect x="22" y="50" width="16" height="38" rx="5" class="logo-limb" />
+                <rect x="82" y="50" width="16" height="38" rx="5" class="logo-limb" />
+
+                <!-- Legs -->
+                <rect x="44" y="94" width="14" height="42" rx="5" class="logo-limb" />
+                <rect x="62" y="94" width="14" height="42" rx="5" class="logo-limb" />
+
+                <!-- Joints with animation -->
+                <circle cx="60" cy="46" r="6" class="logo-joint joint-pulse" />
+                <circle cx="30" cy="55" r="5" class="logo-joint joint-pulse" />
+                <circle cx="90" cy="55" r="5" class="logo-joint joint-pulse" />
+                <circle cx="30" cy="80" r="4" class="logo-joint joint-pulse" />
+                <circle cx="90" cy="80" r="4" class="logo-joint joint-pulse" />
+                <circle cx="51" cy="94" r="5" class="logo-joint joint-pulse" />
+                <circle cx="69" cy="94" r="5" class="logo-joint joint-pulse" />
+
+                <!-- Angle arc -->
+                <path d="M60 46 Q75 60 60 74" class="angle-arc" />
+            </svg>
+        </div>
+
+        <h1 class="app-name">ErgoAssess</h1>
+        <p class="app-tagline">RULA & REBA Calculator</p>
+
+        <div class="loading-bar">
+            <div class="loading-progress"></div>
+        </div>
+        <p class="loading-text">Loading posture analysis engine...</p>
+    </div>
+</body>
+
+</html>

@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ErgoAssess | RULA & REBA Calculator</title>
+    <meta name="description"
+        content="AI-powered ergonomic posture analysis using RULA and REBA assessment methodologies. 100% offline, audit-ready reports.">
+
+    <!-- PWA Meta Tags -->
+    <meta name="theme-color" content="#1e3a5f">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="ErgoAssess">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="application-name" content="ErgoAssess">
+    <meta name="msapplication-TileColor" content="#1e3a5f">
+
+    <!-- Icons -->
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/logo.png') }}">
+    <link rel="apple-touch-icon" href="{{ url_for('static', filename='images/logo.png') }}">
+
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="{{ url_for('static', filename='manifest.json') }}">
+
+    <!-- Fonts & Styles -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <div class="logo">
+                    <div class="logo-icon">
+                        <svg viewBox="0 0 100 120" fill="none">
+                            <circle cx="50" cy="18" r="14" fill="currentColor" />
+                            <rect x="35" y="35" width="30" height="40" rx="5" fill="currentColor" />
+                            <rect x="20" y="38" width="12" height="35" rx="4" fill="currentColor" />
+                            <rect x="68" y="38" width="12" height="35" rx="4" fill="currentColor" />
+                            <rect x="32" y="78" width="14" height="38" rx="4" fill="currentColor" />
+                            <rect x="54" y="78" width="14" height="38" rx="4" fill="currentColor" />
+                            <circle cx="50" cy="50" r="5" fill="var(--color-bg)" stroke="#0ea5e9" stroke-width="2" />
+                            <circle cx="26" cy="45" r="4" fill="var(--color-bg)" stroke="#0ea5e9" stroke-width="1.5" />
+                            <circle cx="74" cy="45" r="4" fill="var(--color-bg)" stroke="#0ea5e9" stroke-width="1.5" />
+                        </svg>
+                    </div>
+                    <div class="logo-text">
+                        <h1>ErgoAssess</h1>
+                        <span>RULA & REBA Calculator</span>
+                    </div>
+                </div>
+                <div class="header-actions">
+                    <div class="header-badge">
+                        <span class="badge badge-success">100% Offline</span>
+                        <span class="badge badge-info">ISO Compliant</span>
+                    </div>
+                    <button class="settings-btn" id="settings-btn" title="Settings">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="3" />
+                            <path
+                                d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Upload Section -->
+            <section id="upload-section" class="section upload-section">
+                <div class="card upload-card">
+                    <div class="card-header">
+                        <h2>Upload Posture Image</h2>
+                        <p>Upload a clear image of a person's working posture for RULA and REBA assessment</p>
+                    </div>
+
+                    <div class="upload-area" id="upload-area">
+                        <div class="upload-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                                <polyline points="17 8 12 3 7 8" />
+                                <line x1="12" y1="3" x2="12" y2="15" />
+                            </svg>
+                        </div>
+                        <h3>Drag & drop your image here</h3>
+                        <p>or click to browse</p>
+                        <p class="upload-hint">Supports JPEG, PNG (Max 16MB)</p>
+                        <input type="file" id="file-input" accept=".jpg,.jpeg,.png" hidden>
+                    </div>
+
+                    <div class="preview-container" id="preview-container" style="display: none;">
+                        <img id="preview-image" src="" alt="Preview">
+                        <button class="btn btn-secondary" id="clear-btn">Clear Image</button>
+                    </div>
+
+                    <!-- Task Context Options -->
+                    <div class="options-panel">
+                        <h4>Task Context (Optional)</h4>
+                        <div class="options-grid">
+                            <div class="option-group">
+                                <label for="load-weight">Load Weight (kg)</label>
+                                <input type="number" id="load-weight" min="0" max="100" value="0" step="0.5">
+                            </div>
+                            <div class="option-group">
+                                <label for="coupling">Hand Coupling</label>
+                                <select id="coupling">
+                                    <option value="good">Good (well-fitted handle)</option>
+                                    <option value="fair">Fair (acceptable grip)</option>
+                                    <option value="poor">Poor (not ideal)</option>
+                                    <option value="unacceptable">Unacceptable</option>
+                                </select>
+                            </div>
+                            <div class="option-group checkbox-group">
+                                <label>
+                                    <input type="checkbox" id="is-static" checked>
+                                    Static posture (held > 1 min)
+                                </label>
+                            </div>
+                            <div class="option-group checkbox-group">
+                                <label>
+                                    <input type="checkbox" id="is-repetitive">
+                                    Repetitive action (> 4x/min)
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button class="btn btn-primary btn-large" id="analyze-btn" disabled>
+                        <span class="btn-text">Analyze Posture</span>
+                        <span class="btn-loading" style="display: none;">
+                            <svg class="spinner" viewBox="0 0 24 24">
+                                <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3" fill="none"
+                                    stroke-dasharray="30 70" />
+                            </svg>
+                            Analyzing...
+                        </span>
+                    </button>
+                </div>
+            </section>
+
+            <!-- Results Section -->
+            <section id="results-section" class="section results-section" style="display: none;">
+                <!-- Score Summary Cards -->
+                <div class="score-cards">
+                    <div class="score-card rula-card" id="rula-card">
+                        <div class="score-header">
+                            <span class="score-label">RULA Score</span>
+                            <span class="score-value" id="rula-score">-</span>
+                        </div>
+                        <div class="score-details">
+                            <span class="action-level" id="rula-action-level">Action Level -</span>
+                            <p class="score-description" id="rula-description">-</p>
+                        </div>
+                    </div>
+
+                    <div class="score-card reba-card" id="reba-card">
+                        <div class="score-header">
+                            <span class="score-label">REBA Score</span>
+                            <span class="score-value" id="reba-score">-</span>
+                        </div>
+                        <div class="score-details">
+                            <span class="risk-level" id="reba-risk-level">- Risk</span>
+                            <p class="score-description" id="reba-description">-</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Warning Banner -->
+                <div class="warning-banner" id="warning-banner" style="display: none;">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path
+                            d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
+                        <line x1="12" y1="9" x2="12" y2="13" />
+                        <line x1="12" y1="17" x2="12.01" y2="17" />
+                    </svg>
+                    <span id="warning-text"></span>
+                </div>
+
+                <!-- Risk Statement -->
+                <div class="card risk-statement-card">
+                    <h3>Overall Risk Assessment</h3>
+                    <p id="risk-statement"></p>
+                </div>
+
+                <!-- Tabs -->
+                <div class="tabs-container">
+                    <div class="tabs">
+                        <button class="tab active" data-tab="visualization">Visualization</button>
+                        <button class="tab" data-tab="angles">Joint Angles</button>
+                        <button class="tab" data-tab="rula-details">RULA Details</button>
+                        <button class="tab" data-tab="reba-details">REBA Details</button>
+                        <button class="tab" data-tab="recommendations">Recommendations</button>
+                    </div>
+
+                    <!-- Tab Content -->
+                    <div class="tab-content active" id="tab-visualization">
+                        <div class="visualization-container">
+                            <img id="annotated-image" src="" alt="Annotated posture analysis">
+                        </div>
+                    </div>
+
+                    <div class="tab-content" id="tab-angles">
+                        <div class="angles-grid" id="angles-grid"></div>
+                    </div>
+
+                    <div class="tab-content" id="tab-rula-details">
+                        <div class="details-container" id="rula-details"></div>
+                    </div>
+
+                    <div class="tab-content" id="tab-reba-details">
+                        <div class="details-container" id="reba-details"></div>
+                    </div>
+
+                    <div class="tab-content" id="tab-recommendations">
+                        <div class="recommendations-container" id="recommendations"></div>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="action-buttons">
+                    <button class="btn btn-secondary" id="new-analysis-btn">New Analysis</button>
+                    <button class="btn btn-primary" id="download-pdf-btn">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                            <polyline points="7 10 12 15 17 10" />
+                            <line x1="12" y1="15" x2="12" y2="3" />
+                        </svg>
+                        Download PDF Report
+                    </button>
+                </div>
+            </section>
+        </main>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>Ergonomic Assessment System | RULA & REBA Methodology | 100% Offline Analysis</p>
+            <p class="footer-note">Standards: ISO 11226 | ISO 11228 | HSE Guidelines</p>
+        </footer>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loading-overlay" style="display: none;">
+        <div class="loading-content">
+            <div class="loading-spinner"></div>
+            <h3>Analyzing Posture</h3>
+            <p id="loading-status">Detecting pose landmarks...</p>
+        </div>
+    </div>
+
+    <!-- Settings Modal -->
+    <div class="settings-modal" id="settings-modal" style="display: none;">
+        <div class="settings-overlay" id="settings-overlay"></div>
+        <div class="settings-panel">
+            <div class="settings-header">
+                <h3>Settings</h3>
+                <button class="settings-close" id="settings-close">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="18" y1="6" x2="6" y2="18" />
+                        <line x1="6" y1="6" x2="18" y2="18" />
+                    </svg>
+                </button>
+            </div>
+            <div class="settings-content">
+                <div class="settings-section">
+                    <h4>Appearance</h4>
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <span class="setting-label">Theme</span>
+                            <span class="setting-description">Choose between dark and light mode</span>
+                        </div>
+                        <div class="theme-toggle">
+                            <button class="theme-btn" id="theme-dark" data-theme="dark">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+                                </svg>
+                                Dark
+                            </button>
+                            <button class="theme-btn" id="theme-light" data-theme="light">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="12" cy="12" r="5" />
+                                    <line x1="12" y1="1" x2="12" y2="3" />
+                                    <line x1="12" y1="21" x2="12" y2="23" />
+                                    <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
+                                    <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
+                                    <line x1="1" y1="12" x2="3" y2="12" />
+                                    <line x1="21" y1="12" x2="23" y2="12" />
+                                    <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
+                                    <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
+                                </svg>
+                                Light
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="settings-section">
+                    <h4>About</h4>
+                    <div class="about-info">
+                        <p><strong>ErgoAnalyzer</strong> v1.0.0</p>
+                        <p>RULA & REBA Posture Assessment</p>
+                        <p class="about-note">100% Offline | ISO 11226 Compliant</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+
+</html>

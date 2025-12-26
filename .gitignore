@@ -1,0 +1,38 @@
+# Byte-compiled files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+venv/
+env/
+.env
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Uploads (user data)
+uploads/*
+!uploads/.gitkeep
+
+# Installer builds
+dist/
+build/
+*.spec
+installer/*.exe
+installer/*.zip
+installer/*.cab
+installer/*.CAB
+
+# Logs
+*.log
+
+# Local config
+.env.local
