@@ -1,0 +1,6 @@
+# Vercel-compatible requirements (landing page only)
+# Full analysis requires desktop app
+flask>=3.0.0
+Pillow>=10.0.0
+python-dotenv>=1.0.0
+werkzeug>=3.0.0
