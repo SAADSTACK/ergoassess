@@ -1,67 +1,111 @@
 @echo off
-title ErgoAnalyzer - Installation
-cd /d "%~dp0"
+title ErgoAssess - One Click Installer
+color 1F
+mode con: cols=60 lines=30
 
-echo ============================================================
-echo   ErgoAnalyzer Installation
-echo ============================================================
+echo.
+echo  ========================================================
+echo  #                                                      #
+echo  #           ErgoAssess - RULA/REBA Calculator          #
+echo  #           One Click Installer                        #
+echo  #                                                      #
+echo  ========================================================
+echo.
+echo  This will install ErgoAssess on your computer.
+echo.
+echo  Requirements: Python 3.9+ (python.org/downloads)
+echo.
+echo  Press any key to install...
+pause >nul
+
+echo.
+echo  Checking Python...
 echo.
 
-:: Check Python
-python --version >nul 2>&1
+python --version
 if errorlevel 1 (
-    echo ERROR: Python is not installed or not in PATH.
-    echo Please install Python 3.9+ from https://python.org
-    pause
+    color 4F
+    echo.
+    echo  ========================================================
+    echo  ERROR: Python not found!
+    echo  ========================================================
+    echo.
+    echo  Please install Python from:
+    echo  https://python.org/downloads
+    echo.
+    echo  IMPORTANT: Check "Add Python to PATH" during install!
+    echo.
+    echo  After installing Python, run this INSTALL.bat again.
+    echo.
+    echo  Press any key to exit...
+    pause >nul
     exit /b 1
 )
 
-echo [1/3] Python found. Installing dependencies...
 echo.
+echo  [OK] Python found!
+echo.
+echo  Installing packages (this takes 2-5 minutes)...
+echo  Please wait...
+echo.
+
 pip install -r requirements.txt
 
 if errorlevel 1 (
+    color 4F
     echo.
-    echo ERROR: Failed to install dependencies.
-    pause
+    echo  ERROR: Package installation failed!
+    echo  Press any key to exit...
+    pause >nul
     exit /b 1
 )
 
 echo.
-echo [2/3] Dependencies installed successfully.
-echo.
+echo  Creating desktop shortcut...
+
+:: Get script directory
+set "APPDIR=%~dp0"
+
+:: Create launcher batch
+(
+echo @echo off
+echo cd /d "%APPDIR%"
+echo title ErgoAssess - RULA/REBA Calculator
+echo echo Starting ErgoAssess...
+echo echo.
+echo echo Server starting at http://localhost:5000
+echo echo Keep this window open while using the app.
+echo echo.
+echo start "" cmd /c "timeout /t 10 /nobreak >nul && start http://localhost:5000"
+echo python app.py
+echo pause
+) > "%APPDIR%ErgoAssess.bat"
 
 :: Create desktop shortcut
-echo [3/3] Creating desktop shortcut...
-
-set SCRIPT="%TEMP%\CreateShortcut.vbs"
-set SHORTCUT="%USERPROFILE%\Desktop\ErgoAnalyzer.lnk"
-set TARGET="%~dp0Run ErgoAnalyzer.bat"
-set ICON="%~dp0static\icon.ico"
-
+set SCRIPT="%TEMP%\shortcut.vbs"
 echo Set oWS = WScript.CreateObject("WScript.Shell") > %SCRIPT%
-echo sLinkFile = %SHORTCUT% >> %SCRIPT%
+echo sLinkFile = oWS.SpecialFolders("Desktop") ^& "\ErgoAssess.lnk" >> %SCRIPT%
 echo Set oLink = oWS.CreateShortcut(sLinkFile) >> %SCRIPT%
-echo oLink.TargetPath = %TARGET% >> %SCRIPT%
-echo oLink.WorkingDirectory = "%~dp0" >> %SCRIPT%
-echo oLink.Description = "ErgoAnalyzer - RULA and REBA Posture Analysis" >> %SCRIPT%
+echo oLink.TargetPath = "%APPDIR%ErgoAssess.bat" >> %SCRIPT%
+echo oLink.WorkingDirectory = "%APPDIR%" >> %SCRIPT%
+echo oLink.Description = "ErgoAssess - RULA and REBA Calculator" >> %SCRIPT%
 echo oLink.Save >> %SCRIPT%
-
 cscript /nologo %SCRIPT%
 del %SCRIPT%
 
+color 2F
 echo.
-echo ============================================================
-echo   Installation Complete!
-echo ============================================================
+echo  ========================================================
+echo  #                                                      #
+echo  #           Installation Complete!                     #
+echo  #                                                      #
+echo  ========================================================
 echo.
-echo A shortcut "ErgoAnalyzer" has been created on your Desktop.
+echo  Desktop shortcut "ErgoAssess" created!
 echo.
-echo To run the app:
-echo   1. Double-click "ErgoAnalyzer" on your Desktop
-echo   2. Or double-click "Run ErgoAnalyzer.bat" in this folder
+echo  To run: Double-click "ErgoAssess" on your Desktop
 echo.
-echo The app will automatically open in your browser.
-echo.
-echo ============================================================
-pause
+echo  Press any key to launch ErgoAssess now...
+pause >nul
+
+start "" "%APPDIR%ErgoAssess.bat"

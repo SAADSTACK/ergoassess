@@ -1,8 +1,8 @@
 # Core Dependencies
 flask>=3.0.0
 mediapipe==0.10.9
-numpy>=1.24.0
-opencv-python-headless>=4.8.0
+numpy==1.24.3
+opencv-python>=4.8.0
 Pillow>=10.0.0
 
 # PDF Report Generation
@@ -11,6 +11,3 @@ reportlab>=4.0.0
 # Utilities
 python-dotenv>=1.0.0
 werkzeug>=3.0.0
-
-# Production Server
-gunicorn>=21.0.0

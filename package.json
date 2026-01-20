@@ -1,0 +1,24 @@
+{
+    "name": "ergoassess",
+    "version": "2.0.0",
+    "description": "AI-Powered Ergonomic Posture Assessment - RULA & REBA Calculator",
+    "private": true,
+    "scripts": {
+        "dev": "vercel dev",
+        "build": "echo 'Static site - no build required'",
+        "start": "npx serve ."
+    },
+    "keywords": [
+        "ergonomics",
+        "rula",
+        "reba",
+        "posture",
+        "assessment",
+        "gemini"
+    ],
+    "author": "Saad Malik, Ibrahim Shuja, Ali Uswad",
+    "license": "MIT",
+    "engines": {
+        "node": ">=18.0.0"
+    }
+}

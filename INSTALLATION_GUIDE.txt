@@ -1,0 +1,36 @@
+# ErgoAssess - Installation Guide
+
+## Quick Install (3 Steps)
+
+### Step 1: Install Python
+Download and install Python from: https://python.org/downloads
+
+**IMPORTANT:** Check "Add Python to PATH" during installation!
+
+### Step 2: Extract Files
+Extract this ZIP to any folder (e.g., Desktop or Documents)
+
+### Step 3: Run Installer
+Double-click `INSTALL.bat` and wait for it to finish.
+
+---
+
+## You're Done!
+A desktop shortcut "ErgoAssess" will be created.
+Double-click it to run the app!
+
+---
+
+## Requirements
+- Windows 10/11
+- Python 3.9 or higher
+- 500 MB disk space
+
+## Support
+If you have issues, contact: [Your Email]
+
+---
+
+**ErgoAssess v1.0.0**
+RULA & REBA Calculator
+AI-Powered Ergonomic Assessment

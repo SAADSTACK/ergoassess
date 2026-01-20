@@ -1,0 +1,1168 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ErgoAssess - RULA & REBA Posture Analysis</title>
+    <meta name="description"
+        content="AI-powered ergonomic posture assessment. Get instant RULA and REBA scores with detailed recommendations.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --primary: #1e3a5f;
+            --primary-light: #2d5a87;
+            --accent: #0ea5e9;
+            --accent-orange: #f97316;
+            --success: #22c55e;
+            --warning: #eab308;
+            --danger: #ef4444;
+            --text: #0f172a;
+            --text-light: #64748b;
+            --bg: #ffffff;
+            --bg-dark: #f8fafc;
+            --border: #e2e8f0;
+            --card-bg: #ffffff;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        [data-theme="dark"] {
+            --primary: #60a5fa;
+            --primary-light: #93c5fd;
+            --text: #f1f5f9;
+            --text-light: #94a3b8;
+            --bg: #0f172a;
+            --bg-dark: #1e293b;
+            --border: #334155;
+            --card-bg: #1e293b;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+            --shadow-lg: 0 20px 40px rgba(0, 0, 0, 0.4);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            color: var(--text);
+            background: var(--bg);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        /* Header */
+        .header {
+            background: var(--card-bg);
+            border-bottom: 1px solid var(--border);
+            padding: 1rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+        }
+
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+            color: var(--primary);
+        }
+
+        .logo svg {
+            width: 32px;
+            height: 32px;
+        }
+
+        .logo span {
+            font-size: 1.25rem;
+            font-weight: 700;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+        }
+
+        .theme-toggle {
+            background: var(--bg-dark);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 0.5rem;
+            cursor: pointer;
+            color: var(--text);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Main Layout */
+        .main {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 1.5rem;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            min-height: calc(100vh - 80px);
+        }
+
+        @media (max-width: 1024px) {
+            .main {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Cards */
+        .card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+        }
+
+        .card-header {
+            padding: 1.25rem;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .card-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: var(--text);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .card-body {
+            padding: 1.25rem;
+        }
+
+        /* Upload Zone */
+        .upload-zone {
+            border: 2px dashed var(--border);
+            border-radius: 12px;
+            padding: 2rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: var(--bg-dark);
+        }
+
+        .upload-zone:hover,
+        .upload-zone.dragover {
+            border-color: var(--accent);
+            background: rgba(14, 165, 233, 0.05);
+        }
+
+        .upload-zone.has-image {
+            padding: 0;
+            border: none;
+            background: transparent;
+        }
+
+        .upload-icon {
+            width: 64px;
+            height: 64px;
+            margin: 0 auto 1rem;
+            color: var(--text-light);
+        }
+
+        .upload-text {
+            color: var(--text-light);
+            margin-bottom: 0.5rem;
+        }
+
+        .upload-hint {
+            font-size: 0.875rem;
+            color: var(--text-light);
+            opacity: 0.7;
+        }
+
+        .preview-container {
+            position: relative;
+            width: 100%;
+        }
+
+        .preview-image {
+            width: 100%;
+            max-height: 400px;
+            object-fit: contain;
+            border-radius: 8px;
+        }
+
+        .remove-image {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            background: var(--danger);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 32px;
+            height: 32px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Form Controls */
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--text);
+            margin-bottom: 0.5rem;
+        }
+
+        .form-input,
+        .form-select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            background: var(--bg);
+            color: var(--text);
+            font-size: 1rem;
+        }
+
+        .form-input:focus,
+        .form-select:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        @media (max-width: 600px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .checkbox-group input {
+            width: 18px;
+            height: 18px;
+        }
+
+        /* Buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 0.875rem 1.5rem;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(30, 58, 95, 0.2);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-secondary {
+            background: var(--bg-dark);
+            color: var(--text);
+            border: 1px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            background: var(--border);
+        }
+
+        .btn-full {
+            width: 100%;
+        }
+
+        /* Score Display */
+        .scores-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        @media (max-width: 600px) {
+            .scores-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .score-card {
+            background: var(--bg-dark);
+            border-radius: 12px;
+            padding: 1.25rem;
+            text-align: center;
+        }
+
+        .score-label {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--text-light);
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .score-value {
+            font-size: 3rem;
+            font-weight: 800;
+            line-height: 1;
+            margin-bottom: 0.5rem;
+        }
+
+        .score-level {
+            font-size: 0.875rem;
+            font-weight: 500;
+            padding: 0.25rem 0.75rem;
+            border-radius: 100px;
+            display: inline-block;
+        }
+
+        .score-action {
+            font-size: 0.75rem;
+            color: var(--text-light);
+            margin-top: 0.75rem;
+        }
+
+        /* Component Scores */
+        .component-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 0.75rem;
+            margin-top: 1rem;
+        }
+
+        .component-item {
+            background: var(--bg-dark);
+            border-radius: 8px;
+            padding: 0.75rem;
+            text-align: center;
+        }
+
+        .component-name {
+            font-size: 0.75rem;
+            color: var(--text-light);
+            margin-bottom: 0.25rem;
+        }
+
+        .component-score {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        /* Recommendations */
+        .recommendations-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .recommendation-item {
+            background: var(--bg-dark);
+            border-radius: 12px;
+            padding: 1rem;
+            border-left: 4px solid var(--accent);
+        }
+
+        .recommendation-item.high {
+            border-left-color: var(--danger);
+        }
+
+        .recommendation-item.medium {
+            border-left-color: var(--warning);
+        }
+
+        .recommendation-header {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .recommendation-badge {
+            font-size: 0.75rem;
+            padding: 0.125rem 0.5rem;
+            border-radius: 4px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .badge-immediate {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .badge-shortterm {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .recommendation-title {
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .recommendation-body {
+            font-size: 0.875rem;
+            color: var(--text-light);
+        }
+
+        .recommendation-actions {
+            margin-top: 0.5rem;
+            padding-left: 1rem;
+        }
+
+        .recommendation-actions li {
+            font-size: 0.813rem;
+            color: var(--text-light);
+            margin-bottom: 0.25rem;
+        }
+
+        /* Risk Statement */
+        .risk-statement {
+            background: var(--bg-dark);
+            border-radius: 12px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border-left: 4px solid var(--accent);
+        }
+
+        .risk-statement.critical {
+            border-left-color: var(--danger);
+            background: #fef2f2;
+        }
+
+        .risk-statement.high {
+            border-left-color: var(--accent-orange);
+            background: #fff7ed;
+        }
+
+        .risk-statement.moderate {
+            border-left-color: var(--warning);
+            background: #fefce8;
+        }
+
+        .risk-statement.low {
+            border-left-color: var(--success);
+            background: #f0fdf4;
+        }
+
+        [data-theme="dark"] .risk-statement.critical {
+            background: rgba(239, 68, 68, 0.1);
+        }
+
+        [data-theme="dark"] .risk-statement.high {
+            background: rgba(249, 115, 22, 0.1);
+        }
+
+        [data-theme="dark"] .risk-statement.moderate {
+            background: rgba(234, 179, 8, 0.1);
+        }
+
+        [data-theme="dark"] .risk-statement.low {
+            background: rgba(34, 197, 94, 0.1);
+        }
+
+        .risk-statement p {
+            font-size: 0.875rem;
+            color: var(--text);
+            line-height: 1.6;
+        }
+
+        /* Loading */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .loading-content {
+            background: var(--card-bg);
+            padding: 2rem;
+            border-radius: 16px;
+            text-align: center;
+            max-width: 300px;
+        }
+
+        .spinner {
+            width: 48px;
+            height: 48px;
+            border: 4px solid var(--border);
+            border-top-color: var(--accent);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 1rem;
+            overflow-x: auto;
+        }
+
+        .tab {
+            padding: 0.75rem 1rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--text-light);
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            white-space: nowrap;
+            transition: all 0.2s;
+        }
+
+        .tab:hover {
+            color: var(--text);
+        }
+
+        .tab.active {
+            color: var(--accent);
+            border-bottom-color: var(--accent);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 3rem 1rem;
+            color: var(--text-light);
+        }
+
+        .empty-state svg {
+            width: 80px;
+            height: 80px;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        /* Angles Table */
+        .angles-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.875rem;
+        }
+
+        .angles-table th,
+        .angles-table td {
+            padding: 0.5rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .angles-table th {
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .angles-table td {
+            color: var(--text-light);
+        }
+
+        .angle-value {
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        /* Footer */
+        .footer {
+            background: var(--card-bg);
+            border-top: 1px solid var(--border);
+            padding: 1.5rem;
+            text-align: center;
+            margin-top: auto;
+        }
+
+        .footer p {
+            font-size: 0.875rem;
+            color: var(--text-light);
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .header-content {
+                justify-content: center;
+            }
+
+            .main {
+                padding: 1rem;
+                gap: 1rem;
+            }
+
+            .card-body {
+                padding: 1rem;
+            }
+
+            .score-value {
+                font-size: 2.5rem;
+            }
+
+            .upload-zone {
+                padding: 1.5rem;
+            }
+        }
+
+        /* Utility */
+        .hidden {
+            display: none !important;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        .mt-1 {
+            margin-top: 1rem;
+        }
+
+        .mb-1 {
+            margin-bottom: 1rem;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <a href="/" class="logo">
+                <svg viewBox="0 0 100 120" fill="none">
+                    <circle cx="50" cy="18" r="14" fill="currentColor" />
+                    <rect x="35" y="35" width="30" height="40" rx="5" fill="currentColor" />
+                    <rect x="20" y="38" width="12" height="35" rx="4" fill="currentColor" />
+                    <rect x="68" y="38" width="12" height="35" rx="4" fill="currentColor" />
+                    <rect x="32" y="78" width="14" height="38" rx="4" fill="currentColor" />
+                    <rect x="54" y="78" width="14" height="38" rx="4" fill="currentColor" />
+                </svg>
+                <span>ErgoAssess</span>
+            </a>
+            <div class="header-actions">
+                <button class="theme-toggle" onclick="toggleTheme()" title="Toggle theme">
+                    <svg id="themeIcon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2">
+                        <circle cx="12" cy="12" r="5" />
+                        <line x1="12" y1="1" x2="12" y2="3" />
+                        <line x1="12" y1="21" x2="12" y2="23" />
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
+                        <line x1="1" y1="12" x2="3" y2="12" />
+                        <line x1="21" y1="12" x2="23" y2="12" />
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main">
+        <!-- Left Column: Input -->
+        <div class="input-column">
+            <!-- Upload Card -->
+            <div class="card mb-1">
+                <div class="card-header">
+                    <h2 class="card-title">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+                            <circle cx="8.5" cy="8.5" r="1.5" />
+                            <polyline points="21 15 16 10 5 21" />
+                        </svg>
+                        Upload Image
+                    </h2>
+                </div>
+                <div class="card-body">
+                    <div id="uploadZone" class="upload-zone" onclick="document.getElementById('fileInput').click()">
+                        <svg class="upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="1.5">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                            <polyline points="17 8 12 3 7 8" />
+                            <line x1="12" y1="3" x2="12" y2="15" />
+                        </svg>
+                        <p class="upload-text">Click or drag image here</p>
+                        <p class="upload-hint">Supports JPEG, PNG • Max 16MB</p>
+                    </div>
+                    <input type="file" id="fileInput" accept="image/*" class="hidden">
+                </div>
+            </div>
+
+            <!-- Task Context Card -->
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+                            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+                        </svg>
+                        Task Context
+                    </h2>
+                </div>
+                <div class="card-body">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Subject ID</label>
+                            <input type="text" id="subjectId" class="form-input" placeholder="e.g., Worker A">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Load (kg)</label>
+                            <input type="number" id="loadKg" class="form-input" value="0" min="0" max="100">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Coupling Quality</label>
+                            <select id="coupling" class="form-select">
+                                <option value="good">Good</option>
+                                <option value="fair">Fair</option>
+                                <option value="poor">Poor</option>
+                                <option value="unacceptable">Unacceptable</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <div class="checkbox-group" style="margin-top: 1.5rem;">
+                                <input type="checkbox" id="isStatic" checked>
+                                <label for="isStatic">Static posture (held &gt;1 min)</label>
+                            </div>
+                            <div class="checkbox-group" style="margin-top: 0.5rem;">
+                                <input type="checkbox" id="isRepetitive">
+                                <label for="isRepetitive">Repetitive (&gt;4x/min)</label>
+                            </div>
+                        </div>
+                    </div>
+                    <button id="analyzeBtn" class="btn btn-primary btn-full mt-1" disabled onclick="analyzeImage()">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <circle cx="11" cy="11" r="8" />
+                            <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                        </svg>
+                        Analyze Posture
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Column: Results -->
+        <div class="results-column">
+            <div class="card" style="height: 100%;">
+                <div class="card-header">
+                    <h2 class="card-title">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M21.21 15.89A10 10 0 1 1 8 2.83" />
+                            <path d="M22 12A10 10 0 0 0 12 2v10z" />
+                        </svg>
+                        Analysis Results
+                    </h2>
+                </div>
+                <div class="card-body">
+                    <!-- Empty State -->
+                    <div id="emptyState" class="empty-state">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <path d="M21.21 15.89A10 10 0 1 1 8 2.83" />
+                            <path d="M22 12A10 10 0 0 0 12 2v10z" />
+                        </svg>
+                        <h3>No Analysis Yet</h3>
+                        <p>Upload an image and click "Analyze Posture" to get your RULA & REBA assessment.</p>
+                    </div>
+
+                    <!-- Results Content -->
+                    <div id="resultsContent" class="hidden">
+                        <!-- Risk Statement -->
+                        <div id="riskStatement" class="risk-statement">
+                            <p id="riskText"></p>
+                        </div>
+
+                        <!-- Scores -->
+                        <div class="scores-grid mb-1">
+                            <div class="score-card">
+                                <div class="score-label">RULA Score</div>
+                                <div id="rulaScore" class="score-value">-</div>
+                                <span id="rulaLevel" class="score-level">-</span>
+                                <div id="rulaAction" class="score-action"></div>
+                            </div>
+                            <div class="score-card">
+                                <div class="score-label">REBA Score</div>
+                                <div id="rebaScore" class="score-value">-</div>
+                                <span id="rebaLevel" class="score-level">-</span>
+                                <div id="rebaAction" class="score-action"></div>
+                            </div>
+                        </div>
+
+                        <!-- Tabs -->
+                        <div class="tabs">
+                            <div class="tab active" onclick="switchTab('recommendations')">Recommendations</div>
+                            <div class="tab" onclick="switchTab('components')">Component Scores</div>
+                            <div class="tab" onclick="switchTab('angles')">Joint Angles</div>
+                        </div>
+
+                        <!-- Recommendations Tab -->
+                        <div id="recommendationsTab" class="tab-content active">
+                            <div id="recommendationsList" class="recommendations-list"></div>
+                        </div>
+
+                        <!-- Components Tab -->
+                        <div id="componentsTab" class="tab-content">
+                            <h4 style="font-size: 0.875rem; color: var(--text-light); margin-bottom: 0.5rem;">RULA
+                                Components</h4>
+                            <div id="rulaComponents" class="component-grid"></div>
+                            <h4 style="font-size: 0.875rem; color: var(--text-light); margin: 1rem 0 0.5rem;">REBA
+                                Components</h4>
+                            <div id="rebaComponents" class="component-grid"></div>
+                        </div>
+
+                        <!-- Angles Tab -->
+                        <div id="anglesTab" class="tab-content">
+                            <table id="anglesTable" class="angles-table"></table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="loading-overlay hidden">
+        <div class="loading-content">
+            <div class="spinner"></div>
+            <p>Analyzing posture...</p>
+            <p style="font-size: 0.75rem; color: var(--text-light); margin-top: 0.5rem;">This may take a few seconds</p>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>© 2025 ErgoAssess - Powered by Gemini Vision AI</p>
+        <p style="margin-top: 0.5rem;">Developed by Saad Malik, Ibrahim Shuja, Ali Uswad</p>
+    </footer>
+
+    <script>
+        // State
+        let currentImage = null;
+        let analysisResult = null;
+
+        // Theme
+        function toggleTheme() {
+            const html = document.documentElement;
+            const isDark = html.getAttribute('data-theme') === 'dark';
+            html.setAttribute('data-theme', isDark ? 'light' : 'dark');
+            localStorage.setItem('theme', isDark ? 'light' : 'dark');
+            updateThemeIcon();
+        }
+
+        function updateThemeIcon() {
+            const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+            document.getElementById('themeIcon').innerHTML = isDark
+                ? '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>'
+                : '<circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>';
+        }
+
+        // Initialize theme
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        document.documentElement.setAttribute('data-theme', savedTheme);
+        updateThemeIcon();
+
+        // File Upload
+        const uploadZone = document.getElementById('uploadZone');
+        const fileInput = document.getElementById('fileInput');
+        const analyzeBtn = document.getElementById('analyzeBtn');
+
+        uploadZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadZone.classList.add('dragover');
+        });
+
+        uploadZone.addEventListener('dragleave', () => {
+            uploadZone.classList.remove('dragover');
+        });
+
+        uploadZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadZone.classList.remove('dragover');
+            const file = e.dataTransfer.files[0];
+            if (file && file.type.startsWith('image/')) {
+                handleFile(file);
+            }
+        });
+
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files[0]) {
+                handleFile(e.target.files[0]);
+            }
+        });
+
+        function handleFile(file) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                currentImage = e.target.result;
+                showPreview(currentImage);
+                analyzeBtn.disabled = false;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function showPreview(src) {
+            uploadZone.classList.add('has-image');
+            uploadZone.innerHTML = `
+                <div class="preview-container">
+                    <img src="${src}" class="preview-image" alt="Preview">
+                    <button class="remove-image" onclick="removeImage(event)">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+                        </svg>
+                    </button>
+                </div>
+            `;
+        }
+
+        function removeImage(e) {
+            e.stopPropagation();
+            currentImage = null;
+            uploadZone.classList.remove('has-image');
+            uploadZone.innerHTML = `
+                <svg class="upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                    <polyline points="17 8 12 3 7 8"/>
+                    <line x1="12" y1="3" x2="12" y2="15"/>
+                </svg>
+                <p class="upload-text">Click or drag image here</p>
+                <p class="upload-hint">Supports JPEG, PNG • Max 16MB</p>
+            `;
+            fileInput.value = '';
+            analyzeBtn.disabled = true;
+        }
+
+        // Analysis
+        async function analyzeImage() {
+            if (!currentImage) return;
+
+            const loading = document.getElementById('loadingOverlay');
+            loading.classList.remove('hidden');
+
+            try {
+                // Extract base64 data
+                const imageData = currentImage.split(',')[1];
+
+                const response = await fetch('/api/analyze', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        image: imageData,
+                        isStatic: document.getElementById('isStatic').checked,
+                        loadKg: parseFloat(document.getElementById('loadKg').value) || 0,
+                        coupling: document.getElementById('coupling').value,
+                        isRepetitive: document.getElementById('isRepetitive').checked,
+                        subjectId: document.getElementById('subjectId').value || 'Anonymous'
+                    })
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.error || 'Analysis failed');
+                }
+
+                analysisResult = data;
+                displayResults(data);
+
+            } catch (error) {
+                alert('Analysis failed: ' + error.message);
+                console.error('Analysis error:', error);
+            } finally {
+                loading.classList.add('hidden');
+            }
+        }
+
+        function displayResults(data) {
+            document.getElementById('emptyState').classList.add('hidden');
+            document.getElementById('resultsContent').classList.remove('hidden');
+
+            // Risk statement
+            const riskStatement = document.getElementById('riskStatement');
+            document.getElementById('riskText').textContent = data.recommendations.overallRiskStatement;
+
+            riskStatement.className = 'risk-statement';
+            if (data.rula.score >= 7 || data.reba.score >= 11) riskStatement.classList.add('critical');
+            else if (data.rula.score >= 5 || data.reba.score >= 8) riskStatement.classList.add('high');
+            else if (data.rula.score >= 3 || data.reba.score >= 4) riskStatement.classList.add('moderate');
+            else riskStatement.classList.add('low');
+
+            // RULA Score
+            document.getElementById('rulaScore').textContent = data.rula.score;
+            document.getElementById('rulaScore').style.color = data.rula.color;
+            document.getElementById('rulaLevel').textContent = `Level ${data.rula.actionLevel}`;
+            document.getElementById('rulaLevel').style.background = data.rula.color + '20';
+            document.getElementById('rulaLevel').style.color = data.rula.color;
+            document.getElementById('rulaAction').textContent = data.rula.actionUrgency;
+
+            // REBA Score
+            document.getElementById('rebaScore').textContent = data.reba.score;
+            document.getElementById('rebaScore').style.color = data.reba.color;
+            document.getElementById('rebaLevel').textContent = data.reba.riskLevel;
+            document.getElementById('rebaLevel').style.background = data.reba.color + '20';
+            document.getElementById('rebaLevel').style.color = data.reba.color;
+            document.getElementById('rebaAction').textContent = data.reba.riskUrgency;
+
+            // Recommendations
+            const recList = document.getElementById('recommendationsList');
+            recList.innerHTML = '';
+
+            const allRecs = [
+                ...data.recommendations.immediateActions.map(r => ({ ...r, type: 'immediate' })),
+                ...data.recommendations.shortTermActions.map(r => ({ ...r, type: 'shortTerm' })),
+                ...data.recommendations.workstationAdjustments.map(r => ({ ...r, type: 'shortTerm' }))
+            ];
+
+            if (allRecs.length === 0) {
+                recList.innerHTML = '<p style="color: var(--text-light); text-align: center;">No major recommendations. Current posture is acceptable.</p>';
+            } else {
+                allRecs.forEach(rec => {
+                    recList.innerHTML += `
+                        <div class="recommendation-item ${rec.type === 'immediate' ? 'high' : 'medium'}">
+                            <div class="recommendation-header">
+                                <span class="recommendation-badge badge-${rec.type === 'immediate' ? 'immediate' : 'shortterm'}">
+                                    ${rec.type === 'immediate' ? 'Immediate' : 'Short-term'}
+                                </span>
+                                <span class="recommendation-title">${rec.title}</span>
+                            </div>
+                            <p class="recommendation-body">${rec.description}</p>
+                            <ul class="recommendation-actions">
+                                ${rec.actions.map(a => `<li>${a}</li>`).join('')}
+                            </ul>
+                        </div>
+                    `;
+                });
+            }
+
+            // Component scores
+            const rulaComps = document.getElementById('rulaComponents');
+            const components = data.rula.details.components;
+            rulaComps.innerHTML = `
+                <div class="component-item"><div class="component-name">Upper Arm</div><div class="component-score">${components.upperArm.finalScore}</div></div>
+                <div class="component-item"><div class="component-name">Lower Arm</div><div class="component-score">${components.lowerArm.finalScore}</div></div>
+                <div class="component-item"><div class="component-name">Wrist</div><div class="component-score">${components.wrist.finalScore}</div></div>
+                <div class="component-item"><div class="component-name">Neck</div><div class="component-score">${components.neck.finalScore}</div></div>
+                <div class="component-item"><div class="component-name">Trunk</div><div class="component-score">${components.trunk.finalScore}</div></div>
+                <div class="component-item"><div class="component-name">Legs</div><div class="component-score">${components.legs.finalScore}</div></div>
+            `;
+
+            const rebaComps = document.getElementById('rebaComponents');
+            const groupA = data.reba.details.groupA;
+            const groupB = data.reba.details.groupB;
+            rebaComps.innerHTML = `
+                <div class="component-item"><div class="component-name">Trunk</div><div class="component-score">${groupA.trunk.finalScore}</div></div>
+                <div class="component-item"><div class="component-name">Neck</div><div class="component-score">${groupA.neck.finalScore}</div></div>
+                <div class="component-item"><div class="component-name">Legs</div><div class="component-score">${groupA.legs.finalScore}</div></div>
+                <div class="component-item"><div class="component-name">Upper Arm</div><div class="component-score">${groupB.upperArm.finalScore}</div></div>
+                <div class="component-item"><div class="component-name">Lower Arm</div><div class="component-score">${groupB.lowerArm.finalScore}</div></div>
+                <div class="component-item"><div class="component-name">Wrist</div><div class="component-score">${groupB.wrist.finalScore}</div></div>
+            `;
+
+            // Angles table
+            const angles = data.angles;
+            const anglesTable = document.getElementById('anglesTable');
+            anglesTable.innerHTML = `
+                <tr><th>Joint</th><th>Angle</th></tr>
+                <tr><td>Neck Flexion</td><td class="angle-value">${angles.neckFlexion?.toFixed(1) || 0}°</td></tr>
+                <tr><td>Trunk Flexion</td><td class="angle-value">${angles.trunkFlexion?.toFixed(1) || 0}°</td></tr>
+                <tr><td>Upper Arm Flexion</td><td class="angle-value">${angles.upperArmFlexion?.toFixed(1) || 0}°</td></tr>
+                <tr><td>Upper Arm Abduction</td><td class="angle-value">${angles.upperArmAbduction?.toFixed(1) || 0}°</td></tr>
+                <tr><td>Lower Arm Flexion</td><td class="angle-value">${angles.lowerArmFlexion?.toFixed(1) || 0}°</td></tr>
+                <tr><td>Wrist Flexion</td><td class="angle-value">${Math.max(angles.wristFlexion || 0, angles.wristExtension || 0).toFixed(1)}°</td></tr>
+                <tr><td>Wrist Deviation</td><td class="angle-value">${angles.wristDeviation?.toFixed(1) || 0}°</td></tr>
+                <tr><td>Leg Flexion</td><td class="angle-value">${angles.legFlexion?.toFixed(1) || 0}°</td></tr>
+            `;
+        }
+
+        // Tabs
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+
+            document.querySelector(`.tab-content#${tabName}Tab`).classList.add('active');
+            event.target.classList.add('active');
+        }
+    </script>
+</body>
+
+</html>
